@@ -16,5 +16,5 @@ public class ShareDto {
 
     private Operation operation;
 
-    private int amount;
+    private Integer amount;
 }
