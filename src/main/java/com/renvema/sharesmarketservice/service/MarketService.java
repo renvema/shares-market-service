@@ -43,7 +43,22 @@ public class MarketService {
         }
     }
 
-    private void processSell(ShareDto ShareDto) {
-        // Implement logic for selling shares
+    private void processSell(ShareDto newShare) {
+        Optional<Share> existingShare = shareRepository.findByUsernameAndTicker(newShare.getUsername(), newShare.getTicker());
+        if (existingShare.isPresent()) {
+            Share share = existingShare.get();
+            int existingAmount = share.getAmount();
+            if (share.getAmount() >= newShare.getAmount()) {
+                share.setAmount(existingAmount - newShare.getAmount());
+                shareRepository.save(share);
+            } else {
+                log.error(String.format("User %s try to sell %d %s shares, but has only  %d",
+                        newShare.getUsername(), newShare.getAmount(), newShare.getTicker(), share.getAmount()));
+            }
+
+        } else {
+            log.error(String.format("User %s try to sell %d %s shares, but has 0 of them",
+                    newShare.getUsername(), newShare.getAmount(), newShare.getTicker()));
+        }
     }
 }
